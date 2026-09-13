@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-09-13
+
+### Changed
+
+- The install section now leads with the npm package,
+  `dsh plugin --profile web add dsh-billing-badge`, with the repository install kept
+  as the alternative. The package page renders this file, so the published copy and
+  the repository now say the same thing.
+- Added the npm version badge to the README.
+
 ## [0.1.0] - 2026-09-13
 
 First public release.

@@ -1,5 +1,8 @@
 # dsh-billing-badge
 
+[![npm](https://img.shields.io/npm/v/dsh-billing-badge)](https://www.npmjs.com/package/dsh-billing-badge)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 Billing season and account balance for the DeepSeek Harness web GUI. A pill in the
 composer's statistics row, immediately after the native **Cache hit** reading, that
 opens a small panel with the full picture.
