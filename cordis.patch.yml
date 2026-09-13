@@ -1,0 +1,6 @@
+# dsh-billing-badge bundle patch: mounts the host half into the profile's host
+# composition. Applied by `dsh plugin --profile web add <this package>`, which
+# reconciles the package into dsh.profile.bundles automatically.
+- insert:
+    - id: billing-badge
+      name: dsh-billing-badge

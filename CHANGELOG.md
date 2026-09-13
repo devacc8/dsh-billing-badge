@@ -1,0 +1,38 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
+project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] - 2026-09-13
+
+First public release.
+
+### Added
+
+- A pill in the composer statistics row, appended after the native cache-hit reading.
+  It shows a season dot (amber for peak, green for off-peak), the season name, and the
+  countdown to the next flip.
+- A panel on click, styled with the native dialog tokens: billing season, next switch
+  with the Beijing wall clock, current Beijing time, account balance with its currency,
+  the granted and topped-up split, a warning row when the API reports the balance as
+  insufficient for calls, and a refresh button.
+- A read-only host route, `GET /plugins/billing-badge/balance`, which resolves the API
+  key through the DSH credentials seam, caches a reading for 60 seconds, and dedupes
+  concurrent reads. It requires the `x-dsh-billing-badge: 1` header and rejects a
+  cross-origin `Origin`.
+- The season rule as a tested module: peak is Beijing time, Monday to Friday,
+  09:00-12:00 and 14:00-18:00, everything else including the whole weekend is off-peak
+  at half price. The next switch is computed by comparing each candidate boundary with
+  the instant before it, so only a real state flip counts.
+- 30 tests covering the season rule, a countdown invariant across nine days, bundle
+  and source sync, the host route and its guards, and the panel rows.
+
+### Fixed
+
+- `is_available` is a top-level field of the balance response, a sibling of
+  `balance_infos`, not a member of the entry. Reading it from the entry made the flag
+  false for every account. The regression test pins the documented location.
+
+MIT.
