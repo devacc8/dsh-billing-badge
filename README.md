@@ -59,6 +59,14 @@ This plugin deliberately does **not** do cost or token accounting.
 
 ## Install
 
+From npm:
+
+```sh
+dsh plugin --profile web add dsh-billing-badge
+```
+
+or straight from the repository:
+
 ```sh
 dsh plugin --profile web add github:devacc8/dsh-billing-badge
 ```
@@ -144,6 +152,14 @@ total_balance = granted_balance + topped_up_balance
 前两行数值相等时，说明账户没有赠送额度。`is_available` 是响应顶层的字段，回答一个问题：余额是否足够调用接口。只有接口报告余额不足时，面板才会加一行警告；该字段对任何有余额的账户都是 true，因此平时不显示。货币一律取自接口返回值，不做假设：返回 USD 的账户不会被标上人民币符号。
 
 ### 安装
+
+从 npm 安装：
+
+```sh
+dsh plugin --profile web add dsh-billing-badge
+```
+
+或直接从仓库安装：
 
 ```sh
 dsh plugin --profile web add github:devacc8/dsh-billing-badge
