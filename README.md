@@ -11,6 +11,8 @@ opens a small panel with the full picture.
 2288M tok · Cache hit 99.8% · ● Off-peak · 2h13m
 ```
 
+![The pill in the composer statistics row and the panel it opens](https://raw.githubusercontent.com/devacc8/dsh-billing-badge/main/docs/preview.png)
+
 ## What it shows
 
 | Where | What |
