@@ -20,7 +20,7 @@ opens a small panel with the full picture.
 | Where | What |
 |---|---|
 | The pill | a coloured dot (amber for peak, green for off-peak), the season, and the time until it flips |
-| The panel (click) | billing season, next switch with the Beijing wall clock, current Beijing time, account balance with its currency, granted and topped-up split, and a refresh button |
+| The panel (click) | billing season, next switch with the Beijing wall clock, current Beijing time, account balance with its currency, the granted and topped-up split when the account has one, and a refresh button |
 
 The season rule is the published one: peak is Beijing time, Monday to Friday,
 09:00-12:00 and 14:00-18:00. Everything else, including all of Saturday and Sunday,
@@ -41,10 +41,14 @@ total_balance = granted_balance + topped_up_balance
   row on its own.
 - `topped_up_balance`, shown as **Topped up**, is money you paid in.
 
-When the two upper rows are equal there is no grant on the account. `is_available`
-is a top-level field of the response and answers one question: is the balance enough
-for API calls. The panel adds a warning row when the answer is no, and stays quiet
-otherwise, because the flag is true for every funded account.
+The panel names the two parts only when the account is actually split. With no grant the
+topped-up amount is the whole balance, so the split would repeat the account balance row
+above it, and that account shows one row instead. **Granted** appears as soon as the
+endpoint reports one.
+
+`is_available` is a top-level field of the response and answers one question: is the
+balance enough for API calls. The panel adds a warning row when the answer is no, and
+stays quiet otherwise, because the flag is true for every funded account.
 
 The currency is taken from the response, never assumed: an account reporting USD is
 not labelled with a CNY sign.

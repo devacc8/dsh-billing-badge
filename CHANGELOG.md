@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-09-18
+
+### Changed
+
+- The panel names the granted and topped-up parts only when the account is actually
+  split. With no grant the topped-up amount is the whole balance, so both rows repeated
+  the account balance line above them. Such an account now shows one row, and **Granted**
+  appears as soon as the endpoint reports one.
+
 ## [0.1.2] - 2026-09-18
 
 ### Fixed

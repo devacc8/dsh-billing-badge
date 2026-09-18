@@ -139,15 +139,41 @@ test('mountChip appends one native-looking pill and removes it on teardown', () 
   assert.equal(documentStub.head.children.length, 1, 'the stylesheet is injected once')
 })
 
-test('the panel lists the balance split and stays quiet when calls are allowed', () => {
+test('a balance with no grant stays one row', () => {
   const rows = loaded.__internal.panelBody({
-    ok: true, currency: 'USD', total: 21.09, granted: 0, toppedUp: 21.09, isAvailable: true,
+    ok: true, currency: 'USD', total: 12.89, granted: 0, toppedUp: 12.89, isAvailable: true,
   })
   const keys = rows.map(([key]) => key)
   assert.deepEqual(keys.slice(0, 3), ['Billing season', 'Next switch', 'Beijing time'])
+  assert.deepEqual(
+    keys.slice(3),
+    ['Account balance'],
+    'the topped-up amount IS the total here, so the split would repeat the row above',
+  )
+  assert.equal(rows[3][1], '$12.89 USD')
+})
+
+test('a split balance names both parts', () => {
+  const rows = loaded.__internal.panelBody({
+    ok: true, currency: 'USD', total: 21.09, granted: 5, toppedUp: 16.09, isAvailable: true,
+  })
+  const keys = rows.map(([key]) => key)
   assert.deepEqual(keys.slice(3), ['Account balance', 'Granted', 'Topped up'])
-  assert.equal(rows[3][1], '$21.09 USD')
-  assert.equal(rows[4][1], '$0')
+  assert.equal(rows[4][1], '$5')
+  assert.equal(rows[5][1], '$16.09')
+})
+
+test('a grant with nothing topped up names the grant alone', () => {
+  const rows = loaded.__internal.panelBody({
+    ok: true, currency: 'USD', total: 5, granted: 5, toppedUp: 0, isAvailable: true,
+  })
+  assert.deepEqual(rows.map(([key]) => key).slice(3), ['Account balance', 'Granted'])
+})
+
+test('a reading without the split fields still shows the balance', () => {
+  const rows = loaded.__internal.panelBody({ ok: true, currency: 'CNY', total: 7, isAvailable: true })
+  assert.deepEqual(rows.map(([key]) => key).slice(3), ['Account balance'])
+  assert.equal(rows[3][1], '\u00a57 CNY')
 })
 
 test('the panel warns only when the API reports the balance as insufficient', () => {
