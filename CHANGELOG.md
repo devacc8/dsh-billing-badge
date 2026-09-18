@@ -13,6 +13,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   0.1.6, where the labelled statistics row was replaced by a row of pill buttons and the
   old anchor no longer existed. Both shapes are supported: the labelled row stays first
   in the resolution order, the dock row is the fallback.
+- The panel no longer closes on every scroll or resize. The composer scrolls on its own
+  while a turn renders, so a click could be dismissed a moment after it opened. The panel
+  now follows the chip and closes only once the chip itself is out of sight.
 
 ### Added
 
@@ -23,6 +26,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   the panel and the pill in its row. Both the catalog detail page and the market's
   storefront read it from this repository, so a screenshot no longer waits on a
   maintainer.
+
+### Removed
+
+- The panel note saying that prices are published in CNY per million tokens while the
+  balance keeps the currency the API reports. The plugin shows no prices, so the sentence
+  explained nothing, and on an account reporting USD it read as if the account's own
+  numbers were CNY. The empty note no longer reserves its spacing.
 
 ## [0.1.1] - 2026-09-13
 

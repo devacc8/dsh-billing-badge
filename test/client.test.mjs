@@ -11,7 +11,19 @@ import { describePhase } from '../lib/season.js'
  */
 const code = readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
 
-const makeElement = (tag) => ({
+/** Record listeners so a test can drive the handlers the bundle registered. */
+const withListeners = (target) => {
+  target.listeners = {}
+  target.addEventListener = (type, handler) => {
+    target.listeners[type] = [...(target.listeners[type] ?? []), handler]
+  }
+  target.removeEventListener = (type, handler) => {
+    target.listeners[type] = (target.listeners[type] ?? []).filter((entry) => entry !== handler)
+  }
+  return target
+}
+
+const makeElement = (tag) => withListeners({
   tagName: tag,
   className: '',
   title: '',
@@ -20,17 +32,21 @@ const makeElement = (tag) => ({
   style: {},
   dataset: {},
   attributes: {},
+  queried: null,
   removed: false,
+  classList: { toggle() {}, add() {}, remove() {} },
   setAttribute(key, value) { this.attributes[key] = String(value) },
   getAttribute(key) { return this.attributes[key] },
   append(...nodes) { this.children.push(...nodes) },
   appendChild(node) { this.children.push(node); return node },
   replaceChildren(...nodes) { this.children = nodes },
   remove() { this.removed = true },
-  addEventListener() {},
-  removeEventListener() {},
   contains() { return false },
-  querySelector() { return null },
+  querySelector(selector) {
+    if (this.queried === null) this.queried = {}
+    if (this.queried[selector] === undefined) this.queried[selector] = makeElement('query')
+    return this.queried[selector]
+  },
   getBoundingClientRect() { return { left: 10, top: 100, bottom: 120, right: 110, width: 100, height: 20 } },
   get offsetWidth() { return 300 },
   get offsetHeight() { return 200 },
@@ -38,25 +54,27 @@ const makeElement = (tag) => ({
 
 const head = makeElement('head')
 const body = makeElement('body')
-const documentStub = {
+const documentStub = withListeners({
   head,
   body,
   querySelector: () => null,
   createElement: (tag) => makeElement(tag),
-  addEventListener() {},
-  removeEventListener() {},
-}
+})
 
-const windowStub = {
+const windowStub = withListeners({
   innerWidth: 1200,
+  innerHeight: 900,
   matchMedia: () => ({ matches: false, addEventListener() {}, removeEventListener() {} }),
   setInterval: () => 1,
   clearInterval() {},
   requestAnimationFrame: (fn) => { fn(); return 1 },
   cancelAnimationFrame() {},
-  addEventListener() {},
-  removeEventListener() {},
-}
+})
+
+globalThis.fetch = async () => ({
+  ok: true,
+  json: async () => ({ ok: true, currency: 'USD', total: 11.02, granted: 0, toppedUp: 11.02, isAvailable: true }),
+})
 
 let loaded = null
 let loadedId = null
@@ -202,4 +220,41 @@ test('statsRow waits while the dock has no readings yet', () => {
     querySelector: (selector) => (selector.includes('composer.dock') ? dock : null),
   })
   assert.equal(mod.__internal.statsRow(), null)
+})
+
+/** Mount a chip, open its panel, and hand back both. */
+const openPanel = () => {
+  const before = documentStub.body.children.length
+  const row = makeElement('div')
+  const teardown = loaded.__internal.mountChip(row)
+  const chip = row.children[0]
+  chip.listeners.click[0]()
+  return { chip, panel: documentStub.body.children[before], teardown }
+}
+
+test('the panel opens on a click and carries no currency remark', () => {
+  const { chip, panel, teardown } = openPanel()
+  assert.equal(panel.className, 'dsh-billing-panel')
+  assert.equal(panel.getAttribute('aria-label'), 'Billing and balance')
+  assert.equal(panel.queried['.dsh-billing-note'].textContent, '', 'a funded account needs no note')
+  assert.equal(chip.getAttribute('aria-expanded'), 'true')
+  teardown()
+  assert.equal(panel.removed, true, 'teardown removes the panel')
+})
+
+test('a scroll repositions the open panel instead of closing it', () => {
+  const { chip, panel, teardown } = openPanel()
+  windowStub.listeners.scroll[0]()
+  assert.equal(panel.removed, false, 'a scroll during rendering no longer dismisses the panel')
+  assert.equal(chip.getAttribute('aria-expanded'), 'true')
+  teardown()
+})
+
+test('a scroll that carries the chip out of sight closes the panel', () => {
+  const { chip, panel, teardown } = openPanel()
+  chip.getBoundingClientRect = () => ({ left: 10, top: -60, bottom: -40, right: 110, width: 100, height: 20 })
+  windowStub.listeners.scroll[0]()
+  assert.equal(panel.removed, true, 'a panel pointing at nothing closes')
+  assert.equal(chip.getAttribute('aria-expanded'), 'false')
+  teardown()
 })
