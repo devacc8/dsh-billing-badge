@@ -63,6 +63,8 @@ dsh plugin --profile web add github:devacc8/dsh-billing-badge
 
 然后重启 `dsh web`。包内声明了 `dsh.bundle.patch`，宿主部分会自动写入 profile 的 bundle 列表。
 
+兼容 DeepSeek Harness 0.1.5 与 0.1.6。旧版本把输入框统计渲染成一行带标记的元素，胶囊加入这一行；0.1.6 把这些读数移进输入框底栏，变成一排胶囊按钮，胶囊会跟随缓存命中那个胶囊加入同一行。
+
 在本地开发这个插件时，改为按路径安装检出目录：
 
 ```sh

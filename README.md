@@ -81,6 +81,10 @@ dsh plugin --profile web add github:devacc8/dsh-billing-badge
 then restart `dsh web`. The package declares `dsh.bundle.patch`, so the host half is
 reconciled into the profile's bundle list automatically.
 
+Works on DeepSeek Harness 0.1.5 and 0.1.6. Older builds render the composer statistics
+as one labelled row and the chip joins it; 0.1.6 moved those readings into the composer
+dock as pill buttons, and the chip follows the cache-hit pill into that row.
+
 Working on the plugin itself, install the checkout by path instead:
 
 ```sh

@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-09-18
+
+### Fixed
+
+- The chip follows the statistics reading into the composer dock on DeepSeek Harness
+  0.1.6, where the labelled statistics row was replaced by a row of pill buttons and the
+  old anchor no longer existed. Both shapes are supported: the labelled row stays first
+  in the resolution order, the dock row is the fallback.
+
+### Added
+
+- `README.zh.md`, a full Chinese README. The catalog card renders a per-language README
+  and its language sniff classified the mixed-language file as Chinese only, which the
+  card then printed. The main README is English again, with a language link.
+- `screenshots.json`, the catalog convention for author-curated card screenshots, with
+  the panel and the pill in its row. Both the catalog detail page and the market's
+  storefront read it from this repository, so a screenshot no longer waits on a
+  maintainer.
+
 ## [0.1.1] - 2026-09-13
 
 ### Changed

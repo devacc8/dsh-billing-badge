@@ -145,3 +145,61 @@ test('a degraded reading still fills the balance slot', () => {
   const failed = loaded.__internal.panelBody({ ok: false, state: 'error', error: 'HTTP 401' })
   assert.deepEqual(failed.at(-1), ['Account balance', 'unavailable'])
 })
+
+/**
+ * Load a fresh copy of the bundle against its own document. The bundle takes
+ * `document` as a loader argument, so a second instance is the only honest way to
+ * drive `statsRow()` against a page shape the module-level stub does not have.
+ */
+const loadWith = (doc) => {
+  let exports = null
+  const windowWithLoader = {
+    ...windowStub,
+    __ModuleLoader__: {
+      load(definition) {
+        exports = definition.factory((specifier) => {
+          if (specifier === 'react') return reactStub
+          throw new Error(`unexpected require: ${specifier}`)
+        })
+      },
+    },
+  }
+  new Function('window', 'document', 'MutationObserver', code)(
+    windowWithLoader,
+    doc,
+    globalThis.MutationObserver,
+  )
+  return exports
+}
+
+test('statsRow takes the labelled row the harness rendered up to 0.1.5', () => {
+  const legacy = makeElement('div')
+  const mod = loadWith({
+    querySelector: (selector) => (selector.includes('data-composer-stats') ? legacy : null),
+  })
+  assert.equal(mod.__internal.statsRow(), legacy)
+})
+
+test('statsRow follows the cache-hit pill into the dock row on 0.1.6', () => {
+  const pill = makeElement('button')
+  pill.textContent = '215M tok · Cache hit 99.8%'
+  const anchor = { children: [pill], contains: (node) => node === pill }
+  const root = { children: [anchor], contains: (node) => node === pill }
+  const dock = { children: [root], querySelectorAll: () => [pill] }
+  const mod = loadWith({
+    querySelector: (selector) => (selector.includes('composer.dock') ? dock : null),
+  })
+  assert.equal(
+    mod.__internal.statsRow(),
+    root,
+    'the chip joins the row that holds the readings, not the dock itself',
+  )
+})
+
+test('statsRow waits while the dock has no readings yet', () => {
+  const dock = { children: [], querySelectorAll: () => [] }
+  const mod = loadWith({
+    querySelector: (selector) => (selector.includes('composer.dock') ? dock : null),
+  })
+  assert.equal(mod.__internal.statsRow(), null)
+})

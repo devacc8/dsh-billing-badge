@@ -37,7 +37,8 @@ test('the bundle registers into the composer dock after the native stats strip',
   assert.match(client, /"conversation\.composer\.dock"/)
   assert.match(client, /order:\s*10/, 'the native stats strip uses order 0, so 10 renders after it')
   assert.match(client, /id:\s*"billing-badge"/)
-  assert.match(client, /data-composer-stats/, 'the chip attaches to the native statistics row')
+  assert.match(client, /data-composer-stats/, 'the chip attaches to the statistics row on 0.1.5 and older')
+  assert.match(client, /data-slot="conversation\.composer\.dock"\]/, 'and to the composer dock row on 0.1.6')
 })
 
 test('the balance route is called with the plugin header', () => {
